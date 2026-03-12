@@ -1,9 +1,17 @@
 import { useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, CloudRain, Loader2, CheckCircle, AlertCircle, Key, Eye, EyeOff } from "lucide-react";
+import {
+  MapPin,
+  CloudRain,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  Key,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ALL_DISTRICTS } from "@/lib/districts";
 
 export interface WeatherData {
@@ -21,33 +29,14 @@ interface WeatherAutoFillProps {
   onFill: (data: WeatherData) => void;
 }
 
-const DEMO_CITIES: Record<string, WeatherData> = {
-  mumbai: { city: "Mumbai", country: "IN", rainfall: 112, humidity: 88, temperature: 32, windSpeed: 38, description: "heavy rain", icon: "🌧️" },
-  delhi: { city: "Delhi", country: "IN", rainfall: 8, humidity: 65, temperature: 38, windSpeed: 22, description: "haze", icon: "🌤️" },
-  chennai: { city: "Chennai", country: "IN", rainfall: 45, humidity: 92, temperature: 34, windSpeed: 28, description: "moderate rain", icon: "🌦️" },
-  bengaluru: { city: "Bengaluru", country: "IN", rainfall: 22, humidity: 78, temperature: 26, windSpeed: 18, description: "light rain", icon: "🌧️" },
-  kolkata: { city: "Kolkata", country: "IN", rainfall: 68, humidity: 85, temperature: 33, windSpeed: 42, description: "heavy shower", icon: "⛈️" },
-  pune: { city: "Pune", country: "IN", rainfall: 35, humidity: 75, temperature: 28, windSpeed: 25, description: "moderate rain", icon: "🌦️" },
-  hyderabad: { city: "Hyderabad", country: "IN", rainfall: 15, humidity: 70, temperature: 36, windSpeed: 20, description: "partly cloudy", icon: "⛅" },
-  ahmedabad: { city: "Ahmedabad", country: "IN", rainfall: 5, humidity: 58, temperature: 40, windSpeed: 30, description: "sunny", icon: "☀️" },
-  jaipur: { city: "Jaipur", country: "IN", rainfall: 0, humidity: 45, temperature: 42, windSpeed: 35, description: "hot & dry", icon: "☀️" },
-  lucknow: { city: "Lucknow", country: "IN", rainfall: 28, humidity: 80, temperature: 31, windSpeed: 18, description: "drizzle", icon: "🌦️" },
-  patna: { city: "Patna", country: "IN", rainfall: 52, humidity: 86, temperature: 29, windSpeed: 45, description: "heavy rain", icon: "🌧️" },
-  bhopal: { city: "Bhopal", country: "IN", rainfall: 18, humidity: 72, temperature: 30, windSpeed: 22, description: "light rain", icon: "🌦️" },
-  // Tamil Nadu districts demo
-  thanjavur: { city: "Thanjavur", country: "IN", rainfall: 78, humidity: 90, temperature: 31, windSpeed: 24, description: "moderate rain", icon: "🌦️" },
-  coimbatore: { city: "Coimbatore", country: "IN", rainfall: 35, humidity: 82, temperature: 29, windSpeed: 20, description: "light rain", icon: "🌦️" },
-  madurai: { city: "Madurai", country: "IN", rainfall: 12, humidity: 71, temperature: 35, windSpeed: 18, description: "partly cloudy", icon: "⛅" },
-  salem: { city: "Salem", country: "IN", rainfall: 22, humidity: 76, temperature: 33, windSpeed: 16, description: "cloudy", icon: "⛅" },
-  tiruchirappalli: { city: "Tiruchirappalli", country: "IN", rainfall: 40, humidity: 85, temperature: 32, windSpeed: 22, description: "moderate rain", icon: "🌦️" },
-  vellore: { city: "Vellore", country: "IN", rainfall: 18, humidity: 73, temperature: 34, windSpeed: 19, description: "partly cloudy", icon: "⛅" },
-};
+const apiKey = "b6d8273c385a12d57ded7f623b25f7c5";
 
-const API_KEY_STORAGE = "owm_api_key";
-
-async function fetchWeatherFromAPI(city: string, apiKey: string): Promise<WeatherData> {
+async function fetchWeatherFromAPI(
+  city: string,
+  apiKey: string,
+): Promise<WeatherData> {
   const response = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`
+    `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`,
   );
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
@@ -62,22 +51,21 @@ async function fetchWeatherFromAPI(city: string, apiKey: string): Promise<Weathe
     temperature: Math.round(d.main.temp),
     windSpeed: Math.round(d.wind.speed * 3.6),
     description: d.weather[0]?.description || "",
-    icon: d.weather[0]?.main === "Rain" ? "🌧️"
-      : d.weather[0]?.main === "Thunderstorm" ? "⛈️"
-      : d.weather[0]?.main === "Drizzle" ? "🌦️"
-      : d.weather[0]?.main === "Clouds" ? "⛅"
-      : "☀️",
+    icon:
+      d.weather[0]?.main === "Rain"
+        ? "🌧️"
+        : d.weather[0]?.main === "Thunderstorm"
+          ? "⛈️"
+          : d.weather[0]?.main === "Drizzle"
+            ? "🌦️"
+            : d.weather[0]?.main === "Clouds"
+              ? "⛅"
+              : "☀️",
   };
-}
-
-function getDemoWeather(city: string): WeatherData | null {
-  const key = city.toLowerCase().trim();
-  return DEMO_CITIES[key] || null;
 }
 
 export default function WeatherAutoFill({ onFill }: WeatherAutoFillProps) {
   const [city, setCity] = useState("");
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem(API_KEY_STORAGE) || "");
   const [showKey, setShowKey] = useState(false);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -97,64 +85,40 @@ export default function WeatherAutoFill({ onFill }: WeatherAutoFillProps) {
         if (matches.length >= 6) break;
       }
     }
-    // Demo cities fallback
-    if (matches.length < 6) {
-      Object.values(DEMO_CITIES).forEach(c => {
-        if (c.city.toLowerCase().includes(q) && !matches.find(m => m.label === c.city)) {
-          matches.push({ label: c.city, sub: c.country });
-        }
-      });
-    }
+
     return matches.slice(0, 6);
   }, [city]);
 
-  const handleSaveKey = () => {
-    localStorage.setItem(API_KEY_STORAGE, apiKey);
-    setShowKeyInput(false);
-  };
+  const handleFetch = useCallback(
+    async (overrideCity?: string) => {
+      const q = overrideCity || city.trim();
+      if (!q) return;
+      setLoading(true);
+      setError(null);
+      setResult(null);
+      setShowSuggestions(false);
 
-  const handleFetch = useCallback(async (overrideCity?: string) => {
-    const q = overrideCity || city.trim();
-    if (!q) return;
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    setShowSuggestions(false);
+      try {
+        let data: WeatherData | null = null;
+        let demo = false;
 
-    try {
-      let data: WeatherData | null = null;
-      let demo = false;
-
-      if (apiKey.trim()) {
-        data = await fetchWeatherFromAPI(q, apiKey.trim());
-      } else {
-        data = getDemoWeather(q);
-        demo = true;
-        if (!data) {
-          // Generate plausible demo data from district name seed
-          const hash = q.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-          data = {
-            city: q,
-            country: "IN",
-            rainfall: (hash * 7) % 120,
-            humidity: 60 + (hash % 35),
-            temperature: 24 + (hash % 18),
-            windSpeed: 10 + (hash % 45),
-            description: "simulated data",
-            icon: hash % 3 === 0 ? "🌧️" : hash % 3 === 1 ? "⛅" : "☀️",
-          };
+        if (apiKey.trim()) {
+          data = await fetchWeatherFromAPI(q, apiKey.trim());
         }
-      }
 
-      setResult(data);
-      setUsedDemo(demo);
-      onFill(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch weather");
-    } finally {
-      setLoading(false);
-    }
-  }, [city, apiKey, onFill]);
+        setResult(data);
+        setUsedDemo(demo);
+        onFill(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch weather",
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [city, apiKey, onFill],
+  );
 
   const handleSelectSuggestion = (label: string) => {
     setCity(label);
@@ -174,13 +138,15 @@ export default function WeatherAutoFill({ onFill }: WeatherAutoFillProps) {
           <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center">
             <CloudRain size={14} className="text-primary" />
           </div>
-          <span className="text-sm font-semibold text-foreground">Weather Auto-Fill</span>
+          <span className="text-sm font-semibold text-foreground">
+            Weather Auto-Fill
+          </span>
           <span className="text-xs px-2 py-0.5 rounded-full bg-accent/20 text-accent-foreground font-medium">
             {apiKey ? "Live API" : "Demo"}
           </span>
         </div>
         <button
-          onClick={() => setShowKeyInput(v => !v)}
+          onClick={() => setShowKeyInput((v) => !v)}
           className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
         >
           <Key size={12} />
@@ -188,58 +154,21 @@ export default function WeatherAutoFill({ onFill }: WeatherAutoFillProps) {
         </button>
       </div>
 
-      {/* API Key Input */}
-      <AnimatePresence>
-        {showKeyInput && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="bg-background rounded-xl p-3 border border-border space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">
-                OpenWeatherMap API Key{" "}
-                <a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                  (Get free key)
-                </a>
-              </Label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    type={showKey ? "text" : "password"}
-                    placeholder="Enter your API key..."
-                    value={apiKey}
-                    onChange={e => setApiKey(e.target.value)}
-                    className="text-sm pr-9"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey(v => !v)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                </div>
-                <Button size="sm" onClick={handleSaveKey} className="shrink-0">Save</Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Without a key, simulated data for any Indian district/city is used.
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* City Search with Autocomplete */}
       <div className="relative">
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <MapPin
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
             <Input
               placeholder="Search district or city..."
               value={city}
-              onChange={e => { setCity(e.target.value); setShowSuggestions(true); }}
+              onChange={(e) => {
+                setCity(e.target.value);
+                setShowSuggestions(true);
+              }}
               onKeyDown={handleKeyDown}
               onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
@@ -271,9 +200,14 @@ export default function WeatherAutoFill({ onFill }: WeatherAutoFillProps) {
                   onMouseDown={() => handleSelectSuggestion(label)}
                   className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/50 transition-colors text-sm text-left"
                 >
-                  <MapPin size={11} className="text-muted-foreground shrink-0" />
+                  <MapPin
+                    size={11}
+                    className="text-muted-foreground shrink-0"
+                  />
                   <span className="font-medium text-foreground">{label}</span>
-                  <span className="text-xs text-muted-foreground ml-auto">{sub}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">
+                    {sub}
+                  </span>
                 </button>
               ))}
             </motion.div>
@@ -309,8 +243,12 @@ export default function WeatherAutoFill({ onFill }: WeatherAutoFillProps) {
               <div className="flex items-center gap-2">
                 <span className="text-xl">{result.icon}</span>
                 <div>
-                  <p className="text-sm font-bold">{result.city}, {result.country}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{result.description}</p>
+                  <p className="text-sm font-bold">
+                    {result.city}, {result.country}
+                  </p>
+                  <p className="text-xs text-muted-foreground capitalize">
+                    {result.description}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-1 text-xs text-primary font-medium">
@@ -320,10 +258,30 @@ export default function WeatherAutoFill({ onFill }: WeatherAutoFillProps) {
             </div>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: "Rainfall", value: `${result.rainfall}mm`, color: "text-blue-500", bg: "bg-blue-500/8" },
-                { label: "Humidity", value: `${result.humidity}%`, color: "text-cyan-500", bg: "bg-cyan-500/8" },
-                { label: "Temperature", value: `${result.temperature}°C`, color: "text-red-500", bg: "bg-red-500/8" },
-                { label: "Wind", value: `${result.windSpeed} km/h`, color: "text-orange-400", bg: "bg-orange-400/8" },
+                {
+                  label: "Rainfall",
+                  value: `${result.rainfall}mm`,
+                  color: "text-blue-500",
+                  bg: "bg-blue-500/8",
+                },
+                {
+                  label: "Humidity",
+                  value: `${result.humidity}%`,
+                  color: "text-cyan-500",
+                  bg: "bg-cyan-500/8",
+                },
+                {
+                  label: "Temperature",
+                  value: `${result.temperature}°C`,
+                  color: "text-red-500",
+                  bg: "bg-red-500/8",
+                },
+                {
+                  label: "Wind",
+                  value: `${result.windSpeed} km/h`,
+                  color: "text-orange-400",
+                  bg: "bg-orange-400/8",
+                },
               ].map(({ label, value, color, bg }) => (
                 <div key={label} className={`rounded-lg px-3 py-2 ${bg}`}>
                   <p className="text-xs text-muted-foreground">{label}</p>
