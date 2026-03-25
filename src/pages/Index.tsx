@@ -44,6 +44,7 @@ export default function Index() {
         {/* Main Content */}
         <main className="flex-1 min-w-0 lg:pt-0 pt-14">
           <div className="max-w-3xl mx-auto px-4 py-6 pb-16">
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -55,6 +56,24 @@ export default function Index() {
                 {renderTab(setActiveTab)}
               </motion.div>
             </AnimatePresence>
+
+            {/* ✅ BUTTON OUTSIDE animation (SAFE) */}
+            <div style={{ marginTop: "20px" }}>
+  <a href="/smart-agriculture-final.html" target="_blank">
+    <button
+      style={{
+        padding: "10px",
+        backgroundColor: "green",
+        color: "white",
+        borderRadius: "5px",
+        cursor: "pointer"
+      }}
+    >
+      Open Agriculture Dashboard
+    </button>
+  </a>
+</div>
+
           </div>
         </main>
       </div>
