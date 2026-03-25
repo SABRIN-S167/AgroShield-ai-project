@@ -1,1 +1,1 @@
-# Agroshield-AI
+#This is for educatinal and hacathon purposes.
