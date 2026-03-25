@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🌱 AgroShield AI  
 ### Smart Agriculture Risk Prediction & Farmer Alert System
 
