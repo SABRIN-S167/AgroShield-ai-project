@@ -84,16 +84,6 @@ Farmers receive **early alerts and preventive recommendations** so they can take
 
 ---
 
-# 👥 Project Authors
-**Vishali J**  
-Department: Information Technology  
-
-**Kiruthika C**  
-Department: Information Technology  
-
-
----
-
 # ⭐ Support
 
 If you found this project useful, please consider giving it a **⭐ star on GitHub**.
