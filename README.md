@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🌱 AgroShield AI  
 ### Smart Agriculture Risk Prediction & Farmer Alert System
 
@@ -104,3 +105,6 @@ It helps the project gain visibility and encourages further development.
 # 📜 License
 
 This project is created for **educational and hackathon purposes**.
+=======
+#This is for educatinal and hacathon purposes.
+>>>>>>> 5c848fbbde7856786d2675f7e8330a7b966c460a
