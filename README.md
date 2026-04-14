@@ -42,6 +42,7 @@ AgroShield AI and AgriSense is a smart agriculture project that helps farmers de
 - Open the project in browser  
 - Click on **Open Agriculture Dashboard**  
 - Use features to analyze crops  
+-https://agroshieldai.netlify.app
 
 ---
 
